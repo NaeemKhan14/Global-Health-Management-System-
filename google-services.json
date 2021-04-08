@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "875364050047",
+    "project_id": "global-health-management",
+    "storage_bucket": "global-health-management.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875364050047:android:202c4bac693b3465f1cb4a",
+        "android_client_info": {
+          "package_name": "com.ghms.hw.ghms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "875364050047-t5502s9mct0014s0qg54lp3pms79f2ui.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-10kxth2dT5FUkGD3ljXcjy19L4UCXP0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "875364050047-t5502s9mct0014s0qg54lp3pms79f2ui.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
