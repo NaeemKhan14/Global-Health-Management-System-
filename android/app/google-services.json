@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "875364050047",
+    "firebase_url": "https://global-health-management-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "global-health-management",
     "storage_bucket": "global-health-management.appspot.com"
   },
