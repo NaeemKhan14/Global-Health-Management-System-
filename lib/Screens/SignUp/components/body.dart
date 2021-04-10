@@ -8,6 +8,7 @@ import 'package:ghms/Screens/WelcomeScreen/components/rounded_button.dart';
 import 'package:ghms/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:ghms/Backend/Authentication/authentication_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Body extends StatefulWidget {
   const Body({
@@ -186,6 +187,12 @@ class _BodyState extends State<Body> {
                             );
 
                     if (signUp.contains("Signed Up")) {
+                      DocumentReference users = FirebaseFirestore.instance.doc('users/' + signUp.split(",")[0]);
+                      users.set({
+                        'phone_num': phoneNumController.text,
+                        'personal_id': personalIDController.text,
+                      });
+                      print(users);
                       // Redirect to homepage.
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
