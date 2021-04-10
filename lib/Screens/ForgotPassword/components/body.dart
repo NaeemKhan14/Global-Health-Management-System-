@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ghms/Screens/Login/components/TextFieldContainer.dart';
-import 'package:ghms/Screens/Login/components/rounded_input_field.dart';
 import 'package:ghms/Screens/WelcomeScreen/components/rounded_button.dart';
 import 'package:ghms/constants.dart';
 import 'background.dart';
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
+  @override
+  _BodyState createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController emailFieldController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final _formKey = GlobalKey<FormState>();
-    final TextEditingController emailFieldController = TextEditingController();
 
     return Background(
       child: SingleChildScrollView(

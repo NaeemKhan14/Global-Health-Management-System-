@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ghms/Backend/Authentication/authentication_service.dart';
 import 'package:ghms/Screens/ForgotPassword/forgot_password.dart';
-import 'package:ghms/Screens/HomePage/homepage.dart';
 import 'package:ghms/Screens/Login/components/login_form.dart';
 import 'background.dart';
 import 'extra_login_actions.dart';
-import 'rounded_input_field.dart';
-import 'rounded_password_field.dart';
 import 'package:ghms/Screens/SignUp/signup_screen.dart';
-import 'package:ghms/Screens/WelcomeScreen/components/rounded_button.dart';
-import 'package:ghms/constants.dart';
-import 'package:provider/provider.dart';
 
 class Body extends StatefulWidget {
   const Body({
@@ -26,8 +19,6 @@ class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final TextEditingController unameController = TextEditingController();
-    final TextEditingController passController = TextEditingController();
 
     return Background(
       child: SingleChildScrollView(

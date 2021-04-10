@@ -17,6 +17,7 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController passController = TextEditingController();
   String errorMsg = '';
   bool errorVisibility = false;
+  bool _passwordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -57,16 +58,23 @@ class _LoginFormState extends State<LoginForm> {
                       if (value.isEmpty) return 'Password field is required.';
                       return null;
                     },
-                    obscureText: true,
+                    obscureText: !_passwordVisible,
                     controller: passController,
                     decoration: InputDecoration(
                       icon: Icon(
                         Icons.lock,
                         color: kPrimaryColor,
                       ),
-                      suffixIcon: Icon(
-                        Icons.visibility,
-                        color: kPrimaryColor,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _passwordVisible ? Icons.visibility_off : Icons.visibility,
+                          color: kPrimaryColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _passwordVisible = !_passwordVisible;
+                          });
+                        },
                       ),
                       hintText: "Password",
                       border: InputBorder.none,
@@ -90,12 +98,13 @@ class _LoginFormState extends State<LoginForm> {
                         passController.text != null)) {
                   // Try and login and get the output from Authentication class.
                   login = await context.read<AuthenticationService>().signIn(
-                        uname: emailFieldController.text,
+                        email: emailFieldController.text,
                         pass: passController.text,
                       );
                   if (login.contains("Signed in")) {
                     // Redirect to homepage.
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
                       return HomePageScreen();
                     }));
                   } else {
