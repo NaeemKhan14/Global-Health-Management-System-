@@ -26,10 +26,13 @@ class _BodyState extends State<Body> {
   final TextEditingController confirmPassController = TextEditingController();
   final TextEditingController phoneNumController = TextEditingController();
   final TextEditingController personalIDController = TextEditingController();
+  final TextEditingController documentController = TextEditingController();
   String errorMsg = '';
   bool errorVisibility = false;
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
+  bool _altUser = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +59,23 @@ class _BodyState extends State<Body> {
                   color: Colors.red,
                 ),
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Account Type: "),
+                Switch(
+                    activeColor: kPrimaryColor,
+                    value: _altUser,
+                    onChanged: (value) {
+                      setState(() {
+                        _altUser = !_altUser;
+                      });
+                    }),
+                Text(
+                  !_altUser ? "Normal User" : "Practitioner",
+                ),
+              ],
             ),
             TextFieldContainer(
               child: Form(
@@ -91,7 +111,9 @@ class _BodyState extends State<Body> {
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _passwordVisible ? Icons.visibility_off : Icons.visibility,
+                            _passwordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: kPrimaryColor,
                           ),
                           onPressed: () {
@@ -118,12 +140,15 @@ class _BodyState extends State<Body> {
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _confirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                            _confirmPasswordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: kPrimaryColor,
                           ),
                           onPressed: () {
                             setState(() {
-                              _confirmPasswordVisible = !_confirmPasswordVisible;
+                              _confirmPasswordVisible =
+                                  !_confirmPasswordVisible;
                             });
                           },
                         ),
@@ -155,14 +180,46 @@ class _BodyState extends State<Body> {
                       },
                       controller: personalIDController,
                       decoration: InputDecoration(
-                        border: InputBorder.none,
+                        border: !_altUser
+                            ? InputBorder.none
+                            : UnderlineInputBorder(),
                         icon: Icon(
-                          Icons.perm_identity,
+                          Icons.person,
                           color: kPrimaryColor,
                         ),
                         hintText: "Personal ID number",
                       ),
                     ),
+                    _altUser
+                        ? TextFormField(
+                            validator: (value) {
+                              if (value.isEmpty)
+                                return 'Document field is required.';
+                              return null;
+                            },
+                            controller: documentController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              icon: Icon(
+                                Icons.description,
+                                color: kPrimaryColor,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  Icons.file_upload,
+                                  color: kPrimaryColor,
+                                ),
+                                onPressed: () {
+
+                                },
+                              ),
+                              hintText: "Upload your document",
+                            ),
+                          )
+                        : Visibility(
+                            child: Text(""),
+                            visible: false,
+                          ),
                   ],
                 ),
               ),
@@ -187,7 +244,8 @@ class _BodyState extends State<Body> {
                             );
 
                     if (signUp.contains("Signed Up")) {
-                      DocumentReference users = FirebaseFirestore.instance.doc('users/' + signUp.split(",")[0]);
+                      DocumentReference users = FirebaseFirestore.instance
+                          .doc('users/' + signUp.split(",")[0]);
                       users.set({
                         'phone_num': phoneNumController.text,
                         'personal_id': personalIDController.text,
