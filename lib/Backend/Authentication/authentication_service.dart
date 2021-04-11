@@ -35,4 +35,16 @@ class AuthenticationService {
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }
+
+  Future<String> forgotPassword({String email}) async
+  {
+      try {
+        await _firebaseAuth.sendPasswordResetEmail(email: email);
+        return "Password reset link sent. Please check your e-mail address.";
+      } catch (e) {
+        if(e.message.contains('There is no user record corresponding to this identifier.'))
+          return "No user is registered with this e-mail address.";
+        return e.message;
+      }
+  }
 }

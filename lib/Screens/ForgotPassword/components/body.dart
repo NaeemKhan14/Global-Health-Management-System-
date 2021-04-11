@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ghms/Backend/Authentication/authentication_service.dart';
 import 'package:ghms/Screens/Login/components/TextFieldContainer.dart';
 import 'package:ghms/Screens/WelcomeScreen/components/rounded_button.dart';
+import 'package:ghms/Screens/WelcomeScreen/welcome_screen.dart';
 import 'package:ghms/constants.dart';
 import 'background.dart';
+import 'package:provider/provider.dart';
 
 class Body extends StatefulWidget {
   @override
@@ -13,6 +16,8 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailFieldController = TextEditingController();
+  String errorMsg = '';
+  bool errorVisibility = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +38,15 @@ class _BodyState extends State<Body> {
                 "assets/icons/login.svg",
                 height: size.height * 0.35,
               ),
+              Visibility(
+                visible: errorVisibility,
+                child: Text(
+                  errorMsg,
+                  style: TextStyle(
+                    color: Colors.red,
+                  ),
+                ),
+              ),
               TextFieldContainer(
                 child: TextFormField(
                   validator: (value) {
@@ -51,12 +65,24 @@ class _BodyState extends State<Body> {
                 ),
               ),
               RoundedButton(
-                text: "Login",
+                text: "Reset Password",
                 color: kPrimaryColor,
-                press: () {
-                  if (_formKey.currentState.validate()) {}
+                press: () async {
+                  setState(() {
+                    errorVisibility = false;
+                  });
+                  if (_formKey.currentState.validate()) {
+                    String forgotPass = await context
+                        .read<AuthenticationService>()
+                        .forgotPassword(
+                          email: emailFieldController.text,
+                        );
+                    setState(() {
+                      errorVisibility = true;
+                      errorMsg = forgotPass;
+                    });
                   }
-                ,
+                },
               ),
             ],
           ),
