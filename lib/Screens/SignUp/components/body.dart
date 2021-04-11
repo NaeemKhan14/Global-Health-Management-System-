@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ghms/Screens/HomePage/homepage.dart';
+import 'package:ghms/Backend/Authentication/authentication_wrapper.dart';
 import 'package:ghms/Screens/Login/components/TextFieldContainer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'background.dart';
 import 'package:ghms/Screens/WelcomeScreen/components/rounded_button.dart';
 import 'package:ghms/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:ghms/Backend/Authentication/authentication_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class Body extends StatefulWidget {
   const Body({
@@ -32,7 +35,8 @@ class _BodyState extends State<Body> {
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
   bool _altUser = false;
-
+  File _image;
+  final picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +77,7 @@ class _BodyState extends State<Body> {
                       });
                     }),
                 Text(
-                  !_altUser ? "Normal User" : "Practitioner",
+                  !_altUser ? "Normal User" : "Medical Practitioner",
                 ),
               ],
             ),
@@ -190,10 +194,13 @@ class _BodyState extends State<Body> {
                         hintText: "Personal ID number",
                       ),
                     ),
+                    // If slider button is pressed, then show an extra input field
+                    // at the end.
                     _altUser
                         ? TextFormField(
+                            readOnly: true,
                             validator: (value) {
-                              if (value.isEmpty)
+                              if (value.isEmpty && _image == null)
                                 return 'Document field is required.';
                               return null;
                             },
@@ -209,11 +216,9 @@ class _BodyState extends State<Body> {
                                   Icons.file_upload,
                                   color: kPrimaryColor,
                                 ),
-                                onPressed: () {
-
-                                },
+                                onPressed: getImage,
                               ),
-                              hintText: "Upload your document",
+                              hintText: (_image == null) ? "Upload your document" : _image.path.split("/").last,
                             ),
                           )
                         : Visibility(
@@ -250,11 +255,14 @@ class _BodyState extends State<Body> {
                         'phone_num': phoneNumController.text,
                         'personal_id': personalIDController.text,
                       });
-                      print(users);
-                      // Redirect to homepage.
+                      User user = FirebaseAuth.instance.currentUser;
+                      if (!user.emailVerified) {
+                        await user.sendEmailVerification();
+                      }
+                      // Redirect to AuthenticationWrapper class.
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return HomePageScreen();
+                        return AuthenticationWrapper();
                       }));
                     } else {
                       // If there are any errors from Firebase, we will show it using
@@ -264,7 +272,9 @@ class _BodyState extends State<Body> {
                         errorMsg = signUp;
                       });
                     }
-                  } else {
+                  }
+                  // If passwords do not match.
+                  else {
                     setState(() {
                       errorVisibility = true;
                       errorMsg = 'Passwords do not match.';
@@ -278,4 +288,18 @@ class _BodyState extends State<Body> {
       ),
     );
   }
+  // Selects and retrieves image from gallery.
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+        });
+        return _image;
+      }
+    });
+  }
+
 }

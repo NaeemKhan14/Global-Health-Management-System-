@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ghms/Screens/HomePage/homepage.dart';
+import 'package:ghms/Backend/Authentication/authentication_wrapper.dart';
 import 'package:ghms/Screens/WelcomeScreen/components/rounded_button.dart';
 import 'TextFieldContainer.dart';
 import 'package:ghms/constants.dart';
@@ -105,7 +105,7 @@ class _LoginFormState extends State<LoginForm> {
                     // Redirect to homepage.
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return HomePageScreen();
+                      return AuthenticationWrapper();
                     }));
                   } else {
                     // If there are any errors from Firebase, we will show it using
