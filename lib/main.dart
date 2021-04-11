@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ghms/Backend/Authentication/authentication_service.dart';
-import 'package:ghms/Screens/HomePage/homepage.dart';
 import 'package:ghms/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'Screens/WelcomeScreen/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'Backend/Authentication/authentication_wrapper.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,16 +38,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthenticationWrapper extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final firebaseUser = context.watch<User>();
-    // Show welcome screen if user is not logged in.
-    if(firebaseUser != null)
-    {
-      return HomePageScreen();
-    }
-    // Take to homepage if user is logged in.
-    return WelcomeScreen();
-  }
-}
