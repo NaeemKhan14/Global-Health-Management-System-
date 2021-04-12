@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:ghms/Backend/Authentication/authentication_service.dart';
-import 'package:ghms/Screens/WelcomeScreen/welcome_screen.dart';
-import 'package:provider/provider.dart';
+import 'components/custom_drawer.dart';
 
 class HomePageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: ElevatedButton(
-        child: Text("Signout"),
-        onPressed: () {
-          context.read<AuthenticationService>().signOut();
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return WelcomeScreen();
-          }));
-          },
+    return CustomDrawer(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "Login",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
-      color: Colors.white,
     );
   }
 }
