@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:ghms/Backend/Authentication/authentication_service.dart';
 import 'package:ghms/Screens/Login/components/TextFieldContainer.dart';
 import 'package:ghms/Screens/WelcomeScreen/components/rounded_button.dart';
-import 'package:ghms/Screens/WelcomeScreen/welcome_screen.dart';
 import 'package:ghms/constants.dart';
 import 'background.dart';
 import 'package:provider/provider.dart';
