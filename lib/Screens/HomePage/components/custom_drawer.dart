@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ghms/Backend/Authentication/authentication_service.dart';
 import 'package:ghms/Screens/HomePage/homepage.dart';
+import 'package:ghms/Screens/Profile/profile_screen.dart';
 import 'package:ghms/Screens/WelcomeScreen/welcome_screen.dart';
 import 'package:ghms/constants.dart';
 import 'package:provider/provider.dart';
@@ -65,7 +66,11 @@ class CustomDrawer extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.person),
                 title: Text('Profile'),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ProfileScreen();
+                  }));
+                },
               ),
               ListTile(
                 leading: Icon(Icons.receipt),
