@@ -14,6 +14,7 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     final scaffoldKey = GlobalKey<ScaffoldState>();
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
@@ -41,20 +42,21 @@ class CustomDrawer extends StatelessWidget {
               ),
               Padding(
                 padding: padding,
-              child: Stack(
-                children: <Widget>[
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Text(
-                    "Welcome Bruh",
-                    style: theme.textTheme.headline1,
-                  ),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                ],
-              ),),
+                child: Stack(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Text(
+                      "Welcome Bruh",
+                      style: theme.textTheme.headline1,
+                    ),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                  ],
+                ),
+              ),
               Divider(
                 height: 1,
                 thickness: 1,
@@ -92,29 +94,33 @@ class CustomDrawer extends StatelessWidget {
           ),
         ),
       ),
-      body: Stack(
-        children: <Widget>[
-          Positioned(
-            left: 10,
-            top: 20,
-            child: Material(
-              color: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: colorBlack),
-                borderRadius: BorderRadius.circular(10),
+      body: Container(
+        width: double.infinity,
+        height: size.height,
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: padding,
+                  child: Material(
+                    color: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: colorBlack),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: IconButton(
+                      icon: Icon(Icons.menu),
+                      onPressed: () => scaffoldKey.currentState.openDrawer(),
+                    ),
+                  ),
+                ),
               ),
-              child: IconButton(
-                icon: Icon(Icons.menu),
-                onPressed: () => scaffoldKey.currentState.openDrawer(),
-              ),
-            ),
+              child,
+            ],
           ),
-          Positioned(
-            left: 10,
-            top: 70,
-            child: child,
-          ),
-        ],
+        ),
       ),
     );
   }
