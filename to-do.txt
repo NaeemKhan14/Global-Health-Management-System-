@@ -1,5 +1,6 @@
 === Homepage
 -- search for medical records
+-- delete medical record
 
 === Profile page
 - get details from firestore and popualte page

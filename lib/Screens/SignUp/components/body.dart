@@ -25,7 +25,9 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailFieldController = TextEditingController();
+  final TextEditingController fullNameController = TextEditingController();
   final TextEditingController passController = TextEditingController();
+  final TextEditingController dobController = TextEditingController();
   final TextEditingController confirmPassController = TextEditingController();
   final TextEditingController phoneNumController = TextEditingController();
   final TextEditingController personalIDController = TextEditingController();
@@ -36,11 +38,14 @@ class _BodyState extends State<Body> {
   bool _confirmPasswordVisible = false;
   bool _altUser = false;
   File _image;
+  String _date = "";
   final picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery
+        .of(context)
+        .size;
 
     return Background(
       child: SingleChildScrollView(
@@ -152,11 +157,57 @@ class _BodyState extends State<Body> {
                           onPressed: () {
                             setState(() {
                               _confirmPasswordVisible =
-                                  !_confirmPasswordVisible;
+                              !_confirmPasswordVisible;
                             });
                           },
                         ),
                         hintText: "Confirm password",
+                      ),
+                    ),
+                    TextFormField(
+                      validator: (value) {
+                        if (value.isEmpty) return 'Full name field is required';
+                        return null;
+                      },
+                      controller: fullNameController,
+                      decoration: InputDecoration(
+                        icon: Icon(
+                          Icons.perm_identity,
+                          color: kPrimaryColor,
+                        ),
+                        hintText: "Full name",
+                      ),
+                    ),
+                    TextFormField(
+                      validator: (value) {
+                        if (value.isEmpty && _date.isEmpty) {
+                          return 'DOB name field is required';
+                        }
+                        return null;
+                      },
+                      onTap: () {
+                        FocusScope.of(context).requestFocus(new FocusNode());
+
+                        showDatePicker(context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime.now(),
+                        ).then((value) {
+                          if(value != null)
+                          {
+                            setState(() {
+                              _date = value.day.toString() + "-" + value.month.toString() + "-" + value.year.toString();
+                            });
+                          }
+                        });
+                      },
+                      controller: dobController,
+                      decoration: InputDecoration(
+                        icon: Icon(
+                          Icons.date_range,
+                          color: kPrimaryColor,
+                        ),
+                        hintText: (_date == '') ? "Date of birth" : _date,
                       ),
                     ),
                     TextFormField(
@@ -198,33 +249,37 @@ class _BodyState extends State<Body> {
                     // at the end.
                     _altUser
                         ? TextFormField(
-                            readOnly: true,
-                            validator: (value) {
-                              if (value.isEmpty && _image == null)
-                                return 'Document field is required.';
-                              return null;
-                            },
-                            controller: documentController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              icon: Icon(
-                                Icons.description,
-                                color: kPrimaryColor,
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  Icons.file_upload,
-                                  color: kPrimaryColor,
-                                ),
-                                onPressed: getImage,
-                              ),
-                              hintText: (_image == null) ? "Upload your document" : _image.path.split("/").last,
-                            ),
-                          )
-                        : Visibility(
-                            child: Text(""),
-                            visible: false,
+                      readOnly: true,
+                      validator: (value) {
+                        if (value.isEmpty && _image == null)
+                          return 'Document field is required.';
+                        return null;
+                      },
+                      controller: documentController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        icon: Icon(
+                          Icons.description,
+                          color: kPrimaryColor,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            Icons.file_upload,
+                            color: kPrimaryColor,
                           ),
+                          onPressed: getImage,
+                        ),
+                        hintText: (_image == null)
+                            ? "Upload your document"
+                            : _image.path
+                            .split("/")
+                            .last,
+                      ),
+                    )
+                        : Visibility(
+                      child: Text(""),
+                      visible: false,
+                    ),
                   ],
                 ),
               ),
@@ -243,10 +298,10 @@ class _BodyState extends State<Body> {
                   // Check if both password fields match.
                   if (passController.text == confirmPassController.text) {
                     String signUp =
-                        await context.read<AuthenticationService>().signUp(
-                              email: emailFieldController.text,
-                              pass: passController.text,
-                            );
+                    await context.read<AuthenticationService>().signUp(
+                      email: emailFieldController.text,
+                      pass: passController.text,
+                    );
 
                     if (signUp.contains("Signed Up")) {
                       DocumentReference users = FirebaseFirestore.instance
@@ -254,6 +309,11 @@ class _BodyState extends State<Body> {
                       users.set({
                         'phone_num': phoneNumController.text,
                         'personal_id': personalIDController.text,
+                        'full_name': fullNameController.text,
+                        'dob': _date,
+                        'account_type': !_altUser
+                            ? 'Normal User'
+                            : 'Practitioner',
                       });
                       User user = FirebaseAuth.instance.currentUser;
                       if (!user.emailVerified) {
@@ -262,8 +322,8 @@ class _BodyState extends State<Body> {
                       // Redirect to AuthenticationWrapper class.
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return AuthenticationWrapper();
-                      }));
+                            return AuthenticationWrapper();
+                          }));
                     } else {
                       // If there are any errors from Firebase, we will show it using
                       // this in the main page.
@@ -288,6 +348,7 @@ class _BodyState extends State<Body> {
       ),
     );
   }
+
   // Selects and retrieves image from gallery.
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);

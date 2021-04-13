@@ -19,16 +19,7 @@ class VerifyEmailScreen extends StatelessWidget {
                 "A verification e-mail has been sent to provided address.\nPlease verify your email address to gain access to the application."
                     "\nIf you have verified your email address, then click on refresh button."),
             RoundedButton(
-              text: "Refresh",
-              color: kPrimaryColor,
-              press: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return AuthenticationWrapper();
-                }));
-              },
-            ),
-            RoundedButton(
-              text: "Sign out",
+              text: "Return to main screen",
               color: kPrimaryColor,
               press: () {
                 context.read<AuthenticationService>().signOut();

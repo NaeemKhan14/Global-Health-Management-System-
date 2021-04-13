@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ghms/Backend/Authentication/authentication_service.dart';
+import 'package:ghms/Screens/HomePage/homepage.dart';
 import 'package:ghms/Screens/WelcomeScreen/welcome_screen.dart';
 import 'package:ghms/constants.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +19,6 @@ class CustomDrawer extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     final scaffoldKey = GlobalKey<ScaffoldState>();
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
     final padding = EdgeInsets.all(20.0);
 
     return Scaffold(
@@ -62,14 +63,18 @@ class CustomDrawer extends StatelessWidget {
                 thickness: 1,
               ),
               ListTile(
-                leading: Icon(Icons.edit),
-                title: Text('Edit Profile'),
+                leading: Icon(Icons.person),
+                title: Text('Profile'),
                 onTap: () {},
               ),
               ListTile(
                 leading: Icon(Icons.receipt),
                 title: Text('Medical Records'),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return HomePageScreen();
+                  }));
+                },
               ),
               ListTile(
                 leading: Icon(Icons.help),
@@ -110,10 +115,18 @@ class CustomDrawer extends StatelessWidget {
                       side: BorderSide(color: colorBlack),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: IconButton(
-                      icon: Icon(Icons.menu),
-                      onPressed: () => scaffoldKey.currentState.openDrawer(),
-                    ),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                      IconButton(
+                        icon: Icon(Icons.menu),
+                        onPressed: () => scaffoldKey.currentState.openDrawer(),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.settings),
+                        onPressed: () {},
+                      ),
+                    ]),
                   ),
                 ),
               ),
