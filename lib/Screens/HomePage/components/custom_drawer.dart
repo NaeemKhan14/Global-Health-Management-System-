@@ -5,9 +5,11 @@ import 'package:ghms/Screens/HomePage/homepage.dart';
 import 'package:ghms/Screens/Profile/profile_screen.dart';
 import 'package:ghms/Screens/WelcomeScreen/welcome_screen.dart';
 import 'package:ghms/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends StatefulWidget {
   final Widget child;
 
   const CustomDrawer({
@@ -16,11 +18,33 @@ class CustomDrawer extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _CustomDrawerState createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  final padding = EdgeInsets.all(20.0);
+  Map data;
+
+  _getData() {
+    if (data == null) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(context.watch<User>().uid)
+          .snapshots()
+          .listen((snaps) {
+        setState(() {
+          data = snaps.data();
+        });
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final scaffoldKey = GlobalKey<ScaffoldState>();
     final theme = Theme.of(context);
-    final padding = EdgeInsets.all(20.0);
 
     return Scaffold(
       key: scaffoldKey,
@@ -49,9 +73,11 @@ class CustomDrawer extends StatelessWidget {
                     SizedBox(
                       height: 5.0,
                     ),
+                    (data == null) ? Text("Welcome")
+                        :
                     Text(
-                      "Welcome Bruh",
-                      style: theme.textTheme.headline1,
+                      "Welcome\n" + data['full_name'],
+                      style: theme.textTheme.headline2,
                     ),
                     SizedBox(
                       height: 5.0,
@@ -135,7 +161,7 @@ class CustomDrawer extends StatelessWidget {
                   ),
                 ),
               ),
-              child,
+              widget.child,
             ],
           ),
         ),
