@@ -2,13 +2,11 @@
 -- search for medical records
 -- delete medical record
 
-=== Profile page
-- get details from firestore and popualte page
-- edit profile
-
 === OCR
 - scan images and get data
 - store that data into firestore
 
 === Admin page
 -- search for medical record based on personal_id or email
+
+--
