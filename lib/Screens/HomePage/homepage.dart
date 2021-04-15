@@ -65,7 +65,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   List<Widget> children;
                   if (snapshot.hasData) {
-                    //print(snapshot.data.docs.map((e) => e.data()));
                     children = makeResults(snapshot.data.docs);
                   } else {
                     children = const <Widget>[
@@ -89,7 +88,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   );
                 }),
           ),
-
         ],
       ),
     );

@@ -36,6 +36,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Widget _buildPopupDialog(BuildContext context) {
+    return AlertDialog(
+      title: Text("Success!"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Your profile has been updated!"),
+        ],
+      ),
+      actions: [
+        RoundedButton(
+          color: kPrimaryColor,
+          text: "Close",
+          press: () => Navigator.of(context).pop(),
+        ),
+      ],
+    );
+  }
+
   @override
   void dispose() {
     data = null;
@@ -133,17 +153,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           TextFormField(
                             onTap: () {
-                              FocusScope.of(context).requestFocus(new FocusNode());
+                              FocusScope.of(context)
+                                  .requestFocus(new FocusNode());
 
-                              showDatePicker(context: context,
+                              showDatePicker(
+                                context: context,
                                 initialDate: DateTime.now(),
                                 firstDate: DateTime(1900),
                                 lastDate: DateTime.now(),
                               ).then((value) {
-                                if(value != null)
-                                {
+                                if (value != null) {
                                   setState(() {
-                                    _date = value.day.toString() + "-" + value.month.toString() + "-" + value.year.toString();
+                                    _date = value.day.toString() +
+                                        "-" +
+                                        value.month.toString() +
+                                        "-" +
+                                        value.year.toString();
                                   });
                                 }
                               });
@@ -170,7 +195,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: Theme.of(context).textTheme.bodyText1,
                           ),
                           TextFormField(
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                             keyboardType: TextInputType.number,
                             controller: phoneNumController,
                             style: TextStyle(
@@ -237,19 +264,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   text: "Save",
                                   color: kPrimaryColor,
                                   press: () async {
-                                    if(_formKey.currentState.validate())
-                                    {
-                                      DocumentReference user = FirebaseFirestore.instance
-                                          .doc('users/' + FirebaseAuth.instance.currentUser.uid);
+                                    if (_formKey.currentState.validate()) {
+                                      DocumentReference user = FirebaseFirestore
+                                          .instance
+                                          .doc('users/' +
+                                              FirebaseAuth
+                                                  .instance.currentUser.uid);
 
-                                      user.set(
-                                        {
-                                          'full_name': nameController.text.isEmpty ? data['full_name'] : nameController.text,
-                                          'phone_num': phoneNumController.text.isEmpty ? data['phone_num'] : phoneNumController.text,
-                                          'personal_id': idController.text.isEmpty ? data['personal_id'] : idController.text,
-                                          'dob': (_date == '') ? data['dob'] : _date,
-                                        }
-                                      );
+                                      user.set({
+                                        'full_name': nameController.text.isEmpty
+                                            ? data['full_name']
+                                            : nameController.text,
+                                        'phone_num':
+                                            phoneNumController.text.isEmpty
+                                                ? data['phone_num']
+                                                : phoneNumController.text,
+                                        'personal_id': idController.text.isEmpty
+                                            ? data['personal_id']
+                                            : idController.text,
+                                        'dob':
+                                            (_date == '') ? data['dob'] : _date,
+                                      });
+
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              _buildPopupDialog(context));
                                     }
                                   },
                                 )
