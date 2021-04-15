@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: "Global Health Management System",
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: colorWhite,
           accentColor: colorDarkBlue,
