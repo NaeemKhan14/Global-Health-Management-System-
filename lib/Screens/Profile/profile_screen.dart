@@ -70,6 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return CustomDrawer(
       child: Container(
         decoration: BoxDecoration(
+          color: kPrimaryLightColor,
             border: Border.all(
               color: colorBlack,
             ),
@@ -87,7 +88,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Text(
                     "Personal Information",
-                    style: Theme.of(context).textTheme.headline1,
+                    style: Theme.of(context).textTheme.headline2
+                    ,
                   ),
                   IconButton(
                     icon: Icon(Icons.edit),
@@ -253,7 +255,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             enabled: false,
                             decoration: InputDecoration(
-                              hintText: context.watch<User>().email,
+                              hintText: (context.watch<User>() != null &&
+                                  context.watch<User>().email != null) ? context.watch<User>().email : "",
                             ),
                           ),
                           SizedBox(
@@ -290,6 +293,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           context: context,
                                           builder: (BuildContext context) =>
                                               _buildPopupDialog(context));
+                                      setState(() {
+                                        _enabled = !_enabled;
+                                      });
                                     }
                                   },
                                 )

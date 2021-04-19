@@ -303,6 +303,9 @@ class _BodyState extends State<Body> {
                       pass: passController.text,
                     );
 
+                    User user = FirebaseAuth.instance.currentUser;
+                    user.updateProfile(displayName: fullNameController.text);
+
                     if (signUp.contains("Signed Up")) {
                       DocumentReference users = FirebaseFirestore.instance
                           .doc('users/' + signUp.split(",")[0]);
@@ -315,7 +318,7 @@ class _BodyState extends State<Body> {
                             ? 'Normal User'
                             : 'Practitioner',
                       });
-                      User user = FirebaseAuth.instance.currentUser;
+
                       if (!user.emailVerified) {
                         await user.sendEmailVerification();
                       }
