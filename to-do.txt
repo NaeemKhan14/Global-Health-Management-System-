@@ -1,12 +1,6 @@
 === Homepage
--- search for medical records
 -- delete medical record
 -- User should be able to send their records to email.
 
 === OCR
 - scan images and get data
-
-=== Admin page
--- search for medical record based on personal_id or email
-
---

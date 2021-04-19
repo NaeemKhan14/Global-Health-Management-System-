@@ -15,13 +15,54 @@ class HomePageScreen extends StatefulWidget {
 
 class _HomePageScreenState extends State<HomePageScreen> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  bool isNormalUser = false;
+  bool isSearch = false;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController searchFieldController = TextEditingController();
+  String docID;
+  Map userData;
 
+  getUserInfo() async
+  {
+    await FirebaseFirestore.instance.collection('users').doc(docID).get().then((value) {
+      setState(() {
+        userData = value.data();
+      });
+    });
+  }
   List<Widget> makeResults(List<QueryDocumentSnapshot> data) {
     List<Widget> results = [];
 
-    if(data.isNotEmpty)
-    {
+    if (data.isNotEmpty) {
       data.forEach((element) {
+        if(!isNormalUser && results.length == 0)
+        {
+          if(userData == null)
+            getUserInfo();
+          if(userData != null)
+          {
+            var textStyle = textThemeDefault.headline4;
+            results.add(Container(
+              margin: EdgeInsets.all(25),
+              padding: EdgeInsets.all(25),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: kPrimaryLightColor,
+                  border: Border.all(
+                    color: colorBlack,
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+              child: Column(
+                children: [
+                  Text("Patient's name: ${userData['full_name']}", style: textStyle),
+                  Text("Patient's phone #: ${userData['phone_num']}", style: textStyle),
+                  Text("Patient's DOB: ${userData['dob']}", style: textStyle),
+                ],
+              ),
+            ));
+          }
+
+        }
         String medicinesList = element.data()['medicines'];
         String diagnosesList = element.data()['diagnoses'];
 
@@ -34,62 +75,159 @@ class _HomePageScreenState extends State<HomePageScreen> {
       });
       return results;
     }
-
     return [Text("No records found.")];
+  }
+
+  getDocumentID(personalID) async
+  {
+    QuerySnapshot userID = await FirebaseFirestore.instance.collection('users').where("personal_id", isEqualTo: personalID).get();
+
+    setState(() {
+      if(userID.docs.isNotEmpty)
+        docID = userID.docs.first.id;
+    });
+  }
+
+  Widget searchResults() {
+
+    return Column(children: [
+      SingleChildScrollView(
+        child: FutureBuilder<QuerySnapshot>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(docID)
+                .collection("medical_records")
+                .get(),
+            builder: (BuildContext context,
+                AsyncSnapshot<QuerySnapshot> snapshot) {
+              List<Widget> children;
+              if (snapshot.hasData) {
+                children = makeResults(snapshot.data.docs);
+              } else {
+                children = const <Widget>[
+                  SizedBox(
+                    child: CircularProgressIndicator(),
+                    width: 60,
+                    height: 60,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text('Awaiting results...'),
+                  )
+                ];
+              }
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: children,
+                ),
+              );
+            }),
+      ),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    String userID = (FirebaseAuth.instance.currentUser != null)
+        ? context.watch<User>().uid
+        : ".";
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
+        .snapshots()
+        .listen((snaps) {
+      if (snaps.data()['account_type'] == "Normal User") {
+        setState(() {
+          isNormalUser = true;
+        });
+      }
+    });
 
     return CustomDrawer(
-      child: Column(
-        children: <Widget>[
-          RoundedButton(
-            text: "Add new record",
-            color: kPrimaryColor,
-            press: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return AddNewRecord();
-              }));
-            },
-          ),
-          SingleChildScrollView(
-            child: FutureBuilder<QuerySnapshot>(
-                future: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(context.watch<User>().uid)
-                    .collection("medical_records")
-                    .get(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  List<Widget> children;
-                  if (snapshot.hasData) {
-                    children = makeResults(snapshot.data.docs);
-                  } else {
-                    children = const <Widget>[
-                      SizedBox(
-                        child: CircularProgressIndicator(),
-                        width: 60,
-                        height: 60,
+      child: (isNormalUser)
+          ? Column(
+              children: <Widget>[
+                RoundedButton(
+                  text: "Add new record",
+                  color: kPrimaryColor,
+                  press: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return AddNewRecord();
+                    }));
+                  },
+                ),
+                SingleChildScrollView(
+                  child: FutureBuilder<QuerySnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(userID)
+                          .collection("medical_records")
+                          .get(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        List<Widget> children;
+                        if (snapshot.hasData) {
+                          children = makeResults(snapshot.data.docs);
+                        } else {
+                          children = const <Widget>[
+                            SizedBox(
+                              child: CircularProgressIndicator(),
+                              width: 60,
+                              height: 60,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Text('Awaiting results...'),
+                            )
+                          ];
+                        }
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: children,
+                          ),
+                        );
+                      }),
+                ),
+              ],
+            )
+          : Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value.isEmpty) return 'This field cannot be empty';
+                        return null;
+                      },
+                      controller: searchFieldController,
+                      decoration: InputDecoration(
+                        hintText: "Search using patient's ID number",
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: Text('Awaiting results...'),
-                      )
-                    ];
-                  }
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: children,
                     ),
-                  );
-                }),
-          ),
-        ],
-      ),
+                  ),
+                  RoundedButton(
+                    text: "Search",
+                    color: kPrimaryColor,
+                    press: () {
+                      setState(() {
+                        userData = null;
+                        isSearch = true;
+                      });
+                      getDocumentID(searchFieldController.text);
+                    },
+                  ),
+                  isSearch ? searchResults() : Text(""),
+                ],
+              ),
+            ),
     );
   }
 }

@@ -5,7 +5,6 @@ import 'package:ghms/Screens/HomePage/homepage.dart';
 import 'package:ghms/Screens/Profile/profile_screen.dart';
 import 'package:ghms/Screens/WelcomeScreen/welcome_screen.dart';
 import 'package:ghms/constants.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -22,24 +21,8 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
-
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final padding = EdgeInsets.all(20.0);
-  Map data;
-
-  _getData() {
-    if (data == null) {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(context.watch<User>().uid)
-          .snapshots()
-          .listen((snaps) {
-        setState(() {
-          data = snaps.data();
-        });
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +45,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     child: Image.asset("assets/images/avatar.png"),
                   ),
                   radius: 60,
-                  // backgroundImage: ExactAssetImage("assets/images/avatar.png"),
                   backgroundColor: Colors.transparent,
                 ),
               ),
@@ -73,10 +55,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     SizedBox(
                       height: 5.0,
                     ),
-                    (data == null) ? Text("Welcome")
-                        :
                     Text(
-                      "Welcome\n" + data['full_name'],
+                      (context.watch<User>() != null &&
+                              context.watch<User>().displayName != null)
+                          ? "Welcome\n" + context.watch<User>().displayName
+                          : "Welcome ",
                       style: theme.textTheme.headline2,
                     ),
                     SizedBox(
@@ -141,7 +124,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 child: Padding(
                   padding: padding,
                   child: Material(
-                    color: Colors.transparent,
+                    color: kPrimaryLightColor,
                     shape: RoundedRectangleBorder(
                       side: BorderSide(color: colorBlack),
                       borderRadius: BorderRadius.circular(10),
@@ -149,15 +132,16 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                      IconButton(
-                        icon: Icon(Icons.menu),
-                        onPressed: () => scaffoldKey.currentState.openDrawer(),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.settings),
-                        onPressed: () {},
-                      ),
-                    ]),
+                          IconButton(
+                            icon: Icon(Icons.menu),
+                            onPressed: () =>
+                                scaffoldKey.currentState.openDrawer(),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.settings),
+                            onPressed: () {},
+                          ),
+                        ]),
                   ),
                 ),
               ),
