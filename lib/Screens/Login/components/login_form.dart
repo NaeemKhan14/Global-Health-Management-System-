@@ -98,7 +98,7 @@ class _LoginFormState extends State<LoginForm> {
                         passController.text != null)) {
                   // Try and login and get the output from Authentication class.
                   login = await context.read<AuthenticationService>().signIn(
-                        email: emailFieldController.text,
+                        email: emailFieldController.text.trim(),
                         pass: passController.text,
                       );
                   if (login.contains("Signed in")) {
