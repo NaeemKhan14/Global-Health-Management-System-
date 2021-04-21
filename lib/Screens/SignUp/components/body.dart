@@ -43,9 +43,7 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
 
     return Background(
       child: SingleChildScrollView(
@@ -157,7 +155,7 @@ class _BodyState extends State<Body> {
                           onPressed: () {
                             setState(() {
                               _confirmPasswordVisible =
-                              !_confirmPasswordVisible;
+                                  !_confirmPasswordVisible;
                             });
                           },
                         ),
@@ -188,15 +186,19 @@ class _BodyState extends State<Body> {
                       onTap: () {
                         FocusScope.of(context).requestFocus(new FocusNode());
 
-                        showDatePicker(context: context,
+                        showDatePicker(
+                          context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime(1900),
                           lastDate: DateTime.now(),
                         ).then((value) {
-                          if(value != null)
-                          {
+                          if (value != null) {
                             setState(() {
-                              _date = value.day.toString() + "-" + value.month.toString() + "-" + value.year.toString();
+                              _date = value.day.toString() +
+                                  "-" +
+                                  value.month.toString() +
+                                  "-" +
+                                  value.year.toString();
                             });
                           }
                         });
@@ -249,37 +251,35 @@ class _BodyState extends State<Body> {
                     // at the end.
                     _altUser
                         ? TextFormField(
-                      readOnly: true,
-                      validator: (value) {
-                        if (value.isEmpty && _image == null)
-                          return 'Document field is required.';
-                        return null;
-                      },
-                      controller: documentController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        icon: Icon(
-                          Icons.description,
-                          color: kPrimaryColor,
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            Icons.file_upload,
-                            color: kPrimaryColor,
-                          ),
-                          onPressed: getImage,
-                        ),
-                        hintText: (_image == null)
-                            ? "Upload your document"
-                            : _image.path
-                            .split("/")
-                            .last,
-                      ),
-                    )
+                            readOnly: true,
+                            validator: (value) {
+                              if (value.isEmpty && _image == null)
+                                return 'Document field is required.';
+                              return null;
+                            },
+                            controller: documentController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              icon: Icon(
+                                Icons.description,
+                                color: kPrimaryColor,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  Icons.file_upload,
+                                  color: kPrimaryColor,
+                                ),
+                                onPressed: getImage,
+                              ),
+                              hintText: (_image == null)
+                                  ? "Upload your document"
+                                  : _image.path.split("/").last,
+                            ),
+                          )
                         : Visibility(
-                      child: Text(""),
-                      visible: false,
-                    ),
+                            child: Text(""),
+                            visible: false,
+                          ),
                   ],
                 ),
               ),
@@ -298,15 +298,17 @@ class _BodyState extends State<Body> {
                   // Check if both password fields match.
                   if (passController.text == confirmPassController.text) {
                     String signUp =
-                    await context.read<AuthenticationService>().signUp(
-                      email: emailFieldController.text,
-                      pass: passController.text,
-                    );
+                        await context.read<AuthenticationService>().signUp(
+                              email: emailFieldController.text,
+                              pass: passController.text,
+                            );
 
                     User user = FirebaseAuth.instance.currentUser;
                     user.updateProfile(displayName: fullNameController.text);
 
                     if (signUp.contains("Signed Up")) {
+                      String accountType =
+                          !_altUser ? 'Normal User' : 'Practitioner';
                       DocumentReference users = FirebaseFirestore.instance
                           .doc('users/' + signUp.split(",")[0]);
                       users.set({
@@ -314,9 +316,7 @@ class _BodyState extends State<Body> {
                         'personal_id': personalIDController.text,
                         'full_name': fullNameController.text,
                         'dob': _date,
-                        'account_type': !_altUser
-                            ? 'Normal User'
-                            : 'Practitioner',
+                        'account_type': accountType,
                       });
 
                       if (!user.emailVerified) {
@@ -325,8 +325,8 @@ class _BodyState extends State<Body> {
                       // Redirect to AuthenticationWrapper class.
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                            return AuthenticationWrapper();
-                          }));
+                        return AuthenticationWrapper();
+                      }));
                     } else {
                       // If there are any errors from Firebase, we will show it using
                       // this in the main page.
@@ -365,5 +365,4 @@ class _BodyState extends State<Body> {
       }
     });
   }
-
 }

@@ -58,9 +58,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void dispose() {
-    data = null;
+    if(mounted)
+    {
+      data = null;
+    }
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return CustomDrawer(
       child: Container(
         decoration: BoxDecoration(
-          color: kPrimaryLightColor,
+            color: kPrimaryLightColor,
             border: Border.all(
               color: colorBlack,
             ),
@@ -88,8 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Text(
                     "Personal Information",
-                    style: Theme.of(context).textTheme.headline2
-                    ,
+                    style: Theme.of(context).textTheme.headline2,
                   ),
                   IconButton(
                     icon: Icon(Icons.edit),
@@ -256,7 +259,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             enabled: false,
                             decoration: InputDecoration(
                               hintText: (context.watch<User>() != null &&
-                                  context.watch<User>().email != null) ? context.watch<User>().email : "",
+                                      context.watch<User>().email != null)
+                                  ? context.watch<User>().email
+                                  : "",
                             ),
                           ),
                           SizedBox(
@@ -289,6 +294,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             (_date == '') ? data['dob'] : _date,
                                       });
 
+                                      if(nameController.text.isNotEmpty)
+                                      {
+                                        User user = FirebaseAuth.instance.currentUser;
+                                        user.updateProfile(displayName: nameController.text);
+                                      }
                                       showDialog(
                                           context: context,
                                           builder: (BuildContext context) =>

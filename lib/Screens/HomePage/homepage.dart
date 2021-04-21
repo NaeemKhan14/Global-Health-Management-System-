@@ -22,6 +22,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
   String docID;
   Map userData;
 
+  ///////////////////
+  // Custom functions
+  ///////////////////
+
+  // Gets provided user's data from firebase and sets it
+  // in userData Map for later use.
   getUserInfo() async
   {
     await FirebaseFirestore.instance.collection('users').doc(docID).get().then((value) {
@@ -30,6 +36,17 @@ class _HomePageScreenState extends State<HomePageScreen> {
       });
     });
   }
+  // Gets the user id for the next function to use it for.
+  getDocumentID(personalID) async
+  {
+    QuerySnapshot userID = await FirebaseFirestore.instance.collection('users').where("personal_id", isEqualTo: personalID).get();
+
+    setState(() {
+      if(userID.docs.isNotEmpty)
+        docID = userID.docs.first.id;
+    });
+  }
+  // Populates the ResultsCard widget on screen for each entry found in DB.
   List<Widget> makeResults(List<QueryDocumentSnapshot> data) {
     List<Widget> results = [];
 
@@ -37,11 +54,14 @@ class _HomePageScreenState extends State<HomePageScreen> {
       data.forEach((element) {
         if(!isNormalUser && results.length == 0)
         {
+          // Error handling condition to avoid null error.
           if(userData == null)
             getUserInfo();
           if(userData != null)
           {
             var textStyle = textThemeDefault.headline4;
+            // When practitioner searched for a patient using personal_id,
+            // this shows the patient details before results.
             results.add(Container(
               margin: EdgeInsets.all(25),
               padding: EdgeInsets.all(25),
@@ -63,29 +83,22 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
         }
+        // Populate the results card.
         String medicinesList = element.data()['medicines'];
         String diagnosesList = element.data()['diagnoses'];
-
+        //print(element.reference.id);
         results.add(ResultsCard(
           dateText: element.data()['date'],
           medicineList: medicinesList.replaceAll("\\n", "\n"),
           diagnosesText: diagnosesList.replaceAll("\\n", "\n"),
           hospitalName: element.data()['hospital_name'],
+          recordID: element.reference.id,
+          btnEnabled: isNormalUser ? true : false,
         ));
       });
       return results;
     }
     return [Text("No records found.")];
-  }
-
-  getDocumentID(personalID) async
-  {
-    QuerySnapshot userID = await FirebaseFirestore.instance.collection('users').where("personal_id", isEqualTo: personalID).get();
-
-    setState(() {
-      if(userID.docs.isNotEmpty)
-        docID = userID.docs.first.id;
-    });
   }
 
   Widget searchResults() {
