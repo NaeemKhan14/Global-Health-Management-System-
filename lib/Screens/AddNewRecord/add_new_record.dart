@@ -46,6 +46,7 @@ class _AddNewRecordState extends State<AddNewRecord> {
     return CustomDrawer(
       child: Container(
         decoration: BoxDecoration(
+            color: kPrimaryLightColor,
             border: Border.all(
               color: colorBlack,
             ),
