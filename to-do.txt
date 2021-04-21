@@ -1,6 +1,2 @@
-=== Homepage
--- delete medical record
--- User should be able to send their records to email.
-
 === OCR
 - scan images and get data
