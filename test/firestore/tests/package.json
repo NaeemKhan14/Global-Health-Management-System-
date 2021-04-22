@@ -1,0 +1,19 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "Firestore unit tests for GHMS",
+  "main": "test.js",
+  "scripts": {
+    "test": "mocha --exit"
+  },
+  "author": "Naeem Khan",
+  "license": "ISC",
+  "devDependencies": {
+    "@firebase/testing": "^0.20.11",
+    "firebase-functions-test": "^0.2.3",
+    "mocha": "^8.3.2"
+  },
+  "dependencies": {
+    "jest": "^26.6.3"
+  }
+}
